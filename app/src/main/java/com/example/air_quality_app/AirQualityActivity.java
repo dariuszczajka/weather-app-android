@@ -2,8 +2,10 @@ package com.example.air_quality_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.air_quality_app.airdata.AirData;
 import com.example.air_quality_app.airdata.DataAPI;
@@ -24,15 +26,21 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AirQualityActivity extends AppCompatActivity {
-
     HashMap<Integer, Station> stationHashMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_air_quality);
+        TextView tv = findViewById(R.id.testing);
         if(stationHashMap.isEmpty()){
             getAllStationsFromApi();
+        }
+        Intent intent = getIntent();
+        double lat = intent.getDoubleExtra("lat",0);
+        double lon = intent.getDoubleExtra("lon",0);
+        if(lat != 0 && lon != 0){
+            tv.setText("lat = " + lat + " " + "lon = " + lon);
         }
 
         //development
