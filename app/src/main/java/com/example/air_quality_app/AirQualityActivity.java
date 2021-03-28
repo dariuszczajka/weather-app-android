@@ -2,11 +2,15 @@ package com.example.air_quality_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.air_quality_app.airdata.AirData;
 import com.example.air_quality_app.airdata.DataAPI;
+import com.example.air_quality_app.airqualityindex.AirQuality;
+import com.example.air_quality_app.airqualityindex.AirQualityAPI;
 import com.example.air_quality_app.sensors.Sensors;
 import com.example.air_quality_app.sensors.SensorsAPI;
 import com.example.air_quality_app.stations.Station;
@@ -24,19 +28,26 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AirQualityActivity extends AppCompatActivity {
-
     HashMap<Integer, Station> stationHashMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_air_quality);
+        TextView tv = findViewById(R.id.testing);
         if(stationHashMap.isEmpty()){
             getAllStationsFromApi();
         }
+        Intent intent = getIntent();
+        double lat = intent.getDoubleExtra("lat",0);
+        double lon = intent.getDoubleExtra("lon",0);
+        if(lat != 0 && lon != 0){
+            tv.setText("lat = " + lat + " " + "lon = " + lon);
+        }
 
         //development
-        getDataFromSensor(92);
+        //getDataFromSensor(92);
+        getAirQualityFromStation(52);
     }
 
     private void getAllStationsFromApi() {
@@ -117,5 +128,30 @@ public class AirQualityActivity extends AppCompatActivity {
         });
         return ad;
     }
+
+    private ArrayList<AirQuality> getAirQualityFromStation(int index){
+        ArrayList<AirQuality> qual = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.gios.gov.pl/pjp-api/rest/aqindex/getIndex/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        AirQualityAPI airQualityAPI = retrofit.create(AirQualityAPI.class);
+        Call<AirQuality> call = airQualityAPI.getPost(String.valueOf(index));
+
+        call.enqueue(new Callback<AirQuality>() {
+            @Override
+            public void onResponse(Call<AirQuality> call, Response<AirQuality> response) {
+                Log.i("testy",response.body().getStIndexLevel().getIndexLevelName());
+            }
+
+            @Override
+            public void onFailure(Call<AirQuality> call, Throwable t) {
+                Log.i("testy",t.getMessage());
+            }
+        });
+        return qual;
+    }
+
 
 }
