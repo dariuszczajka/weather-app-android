@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.air_quality_app.airdata.AirData;
+import com.example.air_quality_app.airdata.DataAPI;
 import com.example.air_quality_app.sensors.Sensors;
 import com.example.air_quality_app.sensors.SensorsAPI;
 import com.example.air_quality_app.stations.Station;
@@ -12,6 +14,7 @@ import com.example.air_quality_app.stations.StationAPI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -33,7 +36,7 @@ public class AirQualityActivity extends AppCompatActivity {
         }
 
         //development
-        getSensorsFromStation(10874);
+        getDataFromSensor(92);
     }
 
     private void getAllStationsFromApi() {
@@ -81,12 +84,38 @@ public class AirQualityActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Sensors>> call, Throwable t) {
-                Log.i("testy","chuj ci w dupe nygusie");
                 Log.i("testy",t.getMessage());
                 //TODO: try/catch block
             }
         });
         return resp;
+    }
+
+    private LinkedList<AirData> getDataFromSensor(int sensorID){
+        LinkedList<AirData> ad = new LinkedList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.gios.gov.pl/pjp-api/rest/data/getData/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        DataAPI dataAPI = retrofit.create(DataAPI.class);
+        Call<AirData> call = dataAPI.getPost(String.valueOf(sensorID));
+
+        call.enqueue(new Callback<AirData>() {
+            @Override
+            public void onResponse(Call<AirData> call, Response<AirData> response) {
+                   for(int i=0;i<response.body().getValues().size();i++){
+                       Log.i("testy",response.body().getValues().get(i).toString());
+                   }
+            }
+
+            @Override
+            public void onFailure(Call<AirData> call, Throwable t) {
+                Log.i("testy",t.getMessage());
+                //TODO: try/catch block
+            }
+        });
+        return ad;
     }
 
 }
