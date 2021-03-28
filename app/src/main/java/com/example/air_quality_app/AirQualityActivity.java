@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.example.air_quality_app.airdata.AirData;
 import com.example.air_quality_app.airdata.DataAPI;
+import com.example.air_quality_app.airqualityindex.AirQuality;
+import com.example.air_quality_app.airqualityindex.AirQualityAPI;
 import com.example.air_quality_app.sensors.Sensors;
 import com.example.air_quality_app.sensors.SensorsAPI;
 import com.example.air_quality_app.stations.Station;
@@ -44,7 +46,8 @@ public class AirQualityActivity extends AppCompatActivity {
         }
 
         //development
-        getDataFromSensor(92);
+        //getDataFromSensor(92);
+        getAirQualityFromStation(52);
     }
 
     private void getAllStationsFromApi() {
@@ -125,5 +128,30 @@ public class AirQualityActivity extends AppCompatActivity {
         });
         return ad;
     }
+
+    private ArrayList<AirQuality> getAirQualityFromStation(int index){
+        ArrayList<AirQuality> qual = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.gios.gov.pl/pjp-api/rest/aqindex/getIndex/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        AirQualityAPI airQualityAPI = retrofit.create(AirQualityAPI.class);
+        Call<AirQuality> call = airQualityAPI.getPost(String.valueOf(index));
+
+        call.enqueue(new Callback<AirQuality>() {
+            @Override
+            public void onResponse(Call<AirQuality> call, Response<AirQuality> response) {
+                Log.i("testy",response.body().getStIndexLevel().getIndexLevelName());
+            }
+
+            @Override
+            public void onFailure(Call<AirQuality> call, Throwable t) {
+                Log.i("testy",t.getMessage());
+            }
+        });
+        return qual;
+    }
+
 
 }
