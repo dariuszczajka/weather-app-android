@@ -3,6 +3,7 @@ package com.example.air_quality_app;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -20,6 +21,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -30,6 +32,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.xw.repo.BubbleSeekBar;
 
+import java.util.ArrayList;
+
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -39,8 +43,10 @@ public class MainActivity extends AppCompatActivity {
     private double[] user_localization;
     SearchView editTextCity;
     TextView cityInput;
+    TextView polutantValue;
     SeekBar seekBar;
     BubbleSeekBar bseekBar;
+    ProgressBar polutantBar;
     View view;
 
     @Override
@@ -105,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
         }
     });
 
+    RecyclerView recyclerView = findViewById(R.id.polutantContainer);
+
+
     }
 
     @SuppressLint("MissingPermission")
@@ -126,6 +135,11 @@ public class MainActivity extends AppCompatActivity {
             }
     }
 
+    public void updateCircleBar(){
+
+        polutantBar.setProgress(10);
+        polutantValue.setText(String.valueOf(polutantBar.getProgress()));
+    }
 
     public void intentActivityFromText(String query) {
         Intent intent = new Intent(this, AirQualityActivity.class);
