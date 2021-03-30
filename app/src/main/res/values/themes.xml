@@ -17,4 +17,9 @@
         <item name ="android:fontFamily">@font/quicksand_bold</item>
         <item name="fontFamily">@font/quicksand_bold</item>
     </style>
+    <style name ="CircularProgressBar">
+        <item name = "android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/circle</item>
+
+    </style>
 </resources>
