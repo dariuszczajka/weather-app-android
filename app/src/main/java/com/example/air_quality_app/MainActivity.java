@@ -32,10 +32,8 @@ public class MainActivity extends AppCompatActivity {
     TextView cityInput;
     TextView polutantValue;
     SeekBar seekBar;
-    BubbleSeekBar bseekBar;
     ProgressBar polutantBar;
     ArcSeekBar arcSeekBar;
-    RecyclerView airQualityRecycler;
     View view;
 
     @Override
@@ -44,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         editTextCity = findViewById(R.id.editTextCity);
         cityInput = findViewById(R.id.citySearch);
-        bseekBar = findViewById(R.id.bubbleSeek);
         arcSeekBar = findViewById(R.id.seekArc);
         editTextCity.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -62,48 +59,9 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
+        //arc seek bar gradient
         int[] intArray = getResources().getIntArray(R.array.progressGradientColors);
         arcSeekBar.setProgressGradient(intArray);
-
-        bseekBar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
-        @Override
-        public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
-            if (!fromUser) {
-                String color = "#FFFFFF";
-
-                if (progress < 20) {
-                    color = "#9ef300";
-                } else if (progress < 40) {
-                    color = "#09af14";
-                } else if (progress < 60) {
-                    color = "#ffff00";
-                } else if (progress < 80) {
-                    color = "#ffb700";
-                } else if (progress <= 100) {
-                    color = "#ff0000";
-                }
-               // bseekBar.setBackgroundColor(Color.argb(255, r, g, b));
-                bseekBar.setBackgroundColor(Color.parseColor(color));
-                bseekBar.setTrackColor(Color.parseColor(color));
-                bseekBar.setSecondTrackColor(Color.parseColor(color));
-                bseekBar.setBubbleColor(Color.parseColor(color));
-            }
-        }
-
-        @Override
-        public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
-
-        }
-
-        @Override
-        public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
-
-        }
-    });
-
-    RecyclerView recyclerView = findViewById(R.id.polutantContainer);
-
 
     }
 
@@ -138,15 +96,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     int num = 0;
-    public void testBtn(View view){
-        if (num<=100){
-            bseekBar.setProgress(num);
-        }else{
-            num =0;
-        }
-
-        num +=20;
-    }
 
 
     @Override
