@@ -10,9 +10,8 @@
 
     <SearchView
         android:id="@+id/editTextCity"
-        android:layout_width="290dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="327dp"
+        android:layout_height="42dp"
         android:background="@drawable/search_shape"
         android:elevation="5dp"
         android:iconifiedByDefault="false"
@@ -22,35 +21,35 @@
 
     </SearchView>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="49dp"
-        android:layout_height="46dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="4dp"
-        android:elevation="5dp"
-        android:onClick="intentActivityFromGps"
-        android:src="@android:drawable/ic_menu_mylocation"
-        app:layout_constraintStart_toEndOf="@+id/editTextCity"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
-        android:id="@+id/cityInput"
+        android:id="@+id/citySearch"
         android:layout_width="302dp"
         android:layout_height="49dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="28dp"
-        android:text="Find your city"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="5dp"
+        android:text="City name"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dividerTop" />
+
+    <TextView
+        android:id="@+id/cityInput2"
+        android:layout_width="301dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="4dp"
+        android:text="Station name"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/citySearch" />
+
 
     <View
         android:id="@+id/dividerTop"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="68dp"
         android:layout_marginEnd="25dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,12 +57,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <View
+        android:id="@+id/dividerTop2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="148dp"
+        android:layout_marginEnd="25dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.xw.repo.BubbleSeekBar
         android:id="@+id/bubbleSeek"
         android:layout_width="387dp"
         android:layout_height="59dp"
-        android:layout_marginBottom="164dp"
+        android:layout_marginBottom="76dp"
         android:clickable="false"
         android:enabled="false"
         app:bsb_always_show_bubble="false"
@@ -85,6 +96,7 @@
         app:bsb_track_size="15dp"
         app:layout_constraintBottom_toTopOf="@+id/dividerBottom"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <View
@@ -92,7 +104,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="484dp"
+        android:layout_marginTop="508dp"
         android:layout_marginEnd="25dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
@@ -104,25 +116,280 @@
         android:id="@+id/button6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginBottom="60dp"
         android:onClick="testBtn"
         android:text="Button"
-        app:layout_constraintBottom_toTopOf="@+id/dividerBottom"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:visibility="invisible"
+        tools:layout_editor_absoluteX="315dp"
+        tools:layout_editor_absoluteY="218dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/polutantContainer"
         android:layout_width="313dp"
-        android:layout_height="191dp"
+        android:layout_height="170dp"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="25dp"
         android:isScrollContainer="true"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dividerBottom"
-        tools:listitem="@layout/cards" />
+        tools:itemCount="15"
+        tools:listitem="@layout/cards_bottom" />
+
+    <LinearLayout
+        android:id="@+id/showQuality"
+        android:layout_width="359dp"
+        android:layout_height="229dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cityInput2">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?selectableItemBackground"
+            app:cardBackgroundColor="#FFFF"
+            app:cardCornerRadius="32dp"
+            app:contentPadding="10dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/header_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:elegantTextHeight="true"
+                        android:text="Air quality index"
+                        android:textAlignment="textStart" />
+
+                </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="162dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="0dp">
+
+
+                    <com.marcinmoskala.arcseekbar.ArcSeekBar
+                        android:id="@+id/seekArc"
+                        android:layout_width="match_parent"
+                        android:layout_height="93dp"
+                        android:layout_marginBottom="16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.905"
+                        app:progress="100"
+                        app:progressBackgroundColor="@color/sliderBack"
+                        app:progressBackgroundWidth="10dp"
+                        app:progressWidth="20dp"
+                        app:roundEdges="true"
+                        app:thumb="@drawable/thumb2" />
+
+                    <TextView
+                        android:id="@+id/polutantValue"
+                        android:layout_width="65dp"
+                        android:layout_height="37dp"
+                        android:text="100%"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/seekArc"
+                        app:layout_constraintEnd_toEndOf="@+id/seekArc"
+                        app:layout_constraintStart_toStartOf="@+id/seekArc"
+                        app:layout_constraintTop_toTopOf="@+id/seekArc"
+                        app:layout_constraintVertical_bias="0.607" />
+
+                    <TextView
+                        android:id="@+id/airQualityView"
+                        android:layout_width="358dp"
+                        android:layout_height="47dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:elegantTextHeight="true"
+                        android:maxLines="3"
+                        android:text="Air quality is {very bad}"
+                        android:textAlignment="textStart"
+                        android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/polutantBar"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.008" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentStart="true"
+
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="?android:attr/listDivider" />
+
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/weatherView"
+        android:layout_width="360dp"
+        android:layout_height="107dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/dividerBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/showQuality">
+
+        <androidx.cardview.widget.CardView
+
+            android:id="@+id/weatherCard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?selectableItemBackground"
+            app:cardBackgroundColor="#FFFF"
+            app:cardCornerRadius="32dp"
+            app:contentPadding="10dp" >
+
+            <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentStart="true"
+
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/weatherHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Weather forecast" />
+
+                <TextView
+                    android:id="@+id/weatherTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="43dp"
+                    android:layout_marginTop="31dp"
+                    android:text="17°C" />
+
+                <TextView
+                    android:id="@+id/windSpeed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="125dp"
+                    android:layout_marginTop="31dp"
+                    android:text="32km/h" />
+
+                <TextView
+                    android:id="@+id/windDirection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="141dp"
+                    android:layout_marginTop="48dp"
+                    android:text="NE" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="37dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginBottom="1dp"
+                    app:srcCompat="@drawable/ic_outline_wb_sunny_24" />
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="37dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="88dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="1dp"
+                    app:srcCompat="@drawable/ic_outline_air_24" />
+
+
+            </RelativeLayout>
+
+
+
+        </androidx.cardview.widget.CardView>
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="35dp"
+        android:layout_height="42dp"
+        android:elevation="10dp"
+        android:onClick="intentActivityFromGps"
+        android:src="@drawable/ic_outline_location_on_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_outline_location_on_24" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

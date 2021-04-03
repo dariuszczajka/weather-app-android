@@ -7,4 +7,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#29B800</color>
+    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorAccent">#00FFFFFF</color>
+    <color name="sliderBack">#4227395a</color>
+    <array name="progressGradientColors">
+        <item>#2ED600</item>
+        <item>#FFF42A</item>
+        <item>#FF9A00</item>
+        <item>#C10000</item>
+    </array>
 </resources>

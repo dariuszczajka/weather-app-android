@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:id="@+id/card"
+    card_view:cardBackgroundColor="#FFFF"
+    card_view:cardCornerRadius="32dp"
+    card_view:contentPadding="10dp"
+    android:foreground="?selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/citySearch"
+                android:layout_width="0dp"
+                android:layout_marginLeft="10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:elegantTextHeight="true"
+                android:text="Air quality index"
+                android:textAlignment="textStart" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="371dp"
+            android:layout_height="203dp"
+            android:layout_below="@+id/dividerBottom"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="0dp">
+
+
+            <com.marcinmoskala.arcseekbar.ArcSeekBar
+                android:id="@+id/seekArc"
+                android:layout_width="match_parent"
+                android:layout_height="93dp"
+                android:layout_marginTop="35dp"
+                android:layout_marginBottom="16dp"
+                card_view:layout_constraintBottom_toTopOf="@+id/polutantContainer"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:progressBackgroundColor="@color/sliderBack"
+                card_view:roundEdges="true"
+                card_view:thumb="@drawable/thumb2"
+                card_view:layout_constraintHorizontal_bias="0.0"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent"
+                card_view:progress="100"
+                card_view:progressBackgroundWidth="10dp"
+                card_view:progressWidth="20dp" />
+
+            <TextView
+                android:id="@+id/polutantValue"
+                android:layout_width="65dp"
+                android:layout_height="37dp"
+                android:text="100%"
+                android:textAlignment="center"
+                android:textSize="20dp"
+                card_view:layout_constraintBottom_toBottomOf="@+id/seekArc"
+                card_view:layout_constraintEnd_toEndOf="@+id/seekArc"
+                card_view:layout_constraintStart_toStartOf="@+id/seekArc"
+                card_view:layout_constraintTop_toTopOf="@+id/seekArc"
+                card_view:layout_constraintVertical_bias="0.607" />
+
+            <TextView
+                android:id="@+id/airQualityView"
+                android:layout_width="358dp"
+                android:layout_height="47dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:elegantTextHeight="true"
+                android:maxLines="3"
+                android:text="Air quality is {very bad}"
+                android:textAlignment="textStart"
+                android:textSize="24sp"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                card_view:layout_constraintEnd_toStartOf="@+id/polutantBar"
+                card_view:layout_constraintHorizontal_bias="0.0"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent"
+                card_view:layout_constraintVertical_bias="0.008" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/dividerBottom"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentStart="true"
+
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="10dp"
+            android:background="?android:attr/listDivider" />
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,26 +1,15 @@
 package com.example.air_quality_app;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.Manifest;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.SeekBar;
@@ -29,10 +18,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.marcinmoskala.arcseekbar.ArcSeekBar;
 import com.xw.repo.BubbleSeekBar;
-
-import java.util.ArrayList;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -47,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     SeekBar seekBar;
     BubbleSeekBar bseekBar;
     ProgressBar polutantBar;
+    ArcSeekBar arcSeekBar;
+    RecyclerView airQualityRecycler;
     View view;
 
     @Override
@@ -54,8 +43,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         editTextCity = findViewById(R.id.editTextCity);
-        cityInput = findViewById(R.id.cityInput);
+        cityInput = findViewById(R.id.citySearch);
         bseekBar = findViewById(R.id.bubbleSeek);
+        arcSeekBar = findViewById(R.id.seekArc);
         editTextCity.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -73,9 +63,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        int[] intArray = getResources().getIntArray(R.array.progressGradientColors);
+        arcSeekBar.setProgressGradient(intArray);
 
-
-    bseekBar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+        bseekBar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
         @Override
         public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
             if (!fromUser) {
