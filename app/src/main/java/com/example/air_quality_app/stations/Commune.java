@@ -1,6 +1,8 @@
 package com.example.air_quality_app.stations;
 
-public class Commune {
+import java.io.Serializable;
+
+public class Commune implements Serializable {
     private String communeName;
     private String districtName;
     private String provinceName;
