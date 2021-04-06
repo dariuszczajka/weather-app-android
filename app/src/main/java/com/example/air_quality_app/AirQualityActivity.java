@@ -12,6 +12,8 @@ import com.example.air_quality_app.airdata.AirData;
 import com.example.air_quality_app.airqualityindex.AirQuality;
 import com.example.air_quality_app.sensors.Sensors;
 import com.example.air_quality_app.stations.Station;
+import com.example.air_quality_app.weather.Weather;
+import com.example.air_quality_app.weather.WeatherAPI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -28,6 +30,9 @@ import io.reactivex.functions.Function;
 import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -49,6 +54,8 @@ public class AirQualityActivity extends AppCompatActivity {
         userLatitude = intent.getDoubleExtra("lat",0);
         userLongitude = intent.getDoubleExtra("lon",0);
         getDataFromAPI();
+        getWeatherFromAPI();
+
     }
 
     private void getDataFromAPI(){
@@ -195,6 +202,33 @@ public class AirQualityActivity extends AppCompatActivity {
             }
         }
         return closestStation;
+    }
+
+    private void getWeatherFromAPI(){
+
+        TextView temp = findViewById(R.id.temp);
+        TextView windSpeed = findViewById(R.id.windSpeed);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        WeatherAPI weatherAPI = retrofit.create(WeatherAPI.class);
+        Call<Weather> call = weatherAPI.getPost(userLatitude,userLongitude,"metric","749561a315b14523a8f5f1ef95e45864");
+
+        call.enqueue(new Callback<Weather>() {
+            @Override
+            public void onResponse(Call<Weather> call, Response<Weather> response) {
+                temp.setText(response.body().getMain().get("temp").toString()+" C");
+                windSpeed.setText(response.body().getWind().get("speed").toString()+" Km/h");
+                //Log.i("testy",response.body().getWind().get("speed").toString()+" Km/h");
+            }
+
+            @Override
+            public void onFailure(Call<Weather> call, Throwable t) {
+                Log.i("testy",t.getMessage());
+            }
+        });
     }
 
 }
