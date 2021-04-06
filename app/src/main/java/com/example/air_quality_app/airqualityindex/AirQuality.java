@@ -8,7 +8,7 @@ public class AirQuality {
     private String so2CalcDate;
     private stIndexLevel so2IndexLevel;
     private String so2SourceDataDate;
-    private int no2CalcDate;
+    //private int no2CalcDate;
     private stIndexLevel no2IndexLevel;
     private String no2SourceDataDate;
     private String coCalcDate;
@@ -47,7 +47,6 @@ public class AirQuality {
                 ", so2CalcDate='" + so2CalcDate + '\'' +
                 ", so2IndexLevel=" + so2IndexLevel +
                 ", so2SourceDataDate='" + so2SourceDataDate + '\'' +
-                ", no2CalcDate=" + no2CalcDate +
                 ", no2IndexLevel=" + no2IndexLevel +
                 ", no2SourceDataDate='" + no2SourceDataDate + '\'' +
                 ", coCalcDate='" + coCalcDate + '\'' +

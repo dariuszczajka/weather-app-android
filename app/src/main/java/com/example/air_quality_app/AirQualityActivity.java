@@ -1,164 +1,145 @@
 package com.example.air_quality_app;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.example.air_quality_app.airdata.AirData;
-import com.example.air_quality_app.airdata.DataAPI;
-import com.example.air_quality_app.airdata.Measurement;
 import com.example.air_quality_app.airqualityindex.AirQuality;
-import com.example.air_quality_app.airqualityindex.AirQualityAPI;
 import com.example.air_quality_app.sensors.Sensors;
-import com.example.air_quality_app.sensors.SensorsAPI;
 import com.example.air_quality_app.stations.Station;
-import com.example.air_quality_app.stations.StationAPI;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
-import io.reactivex.Scheduler;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 import io.reactivex.Observable;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AirQualityActivity extends AppCompatActivity {
-    private static HashMap<Integer, Station> stationHashMap = new HashMap<>();
-    private LinkedList<Sensors> sensorsList = new LinkedList<>();
-    private static LinkedList<AirData> measurementsList = new LinkedList<>();
+    private static ArrayList<Station> stationsList = new ArrayList<>();
+    private ArrayList<Sensors> sensorsList = new ArrayList<>();
+    private static ArrayList<AirData> measurementsList = new ArrayList<>();
     private AirQuality qualityIndex = new AirQuality();
+    private double userLatitude;
+    private double userLongitude;
+    private int closestStationID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_air_quality);
-
         Intent intent = getIntent();
-        double lat = intent.getDoubleExtra("lat",0);
-        double lon = intent.getDoubleExtra("lon",0);
-        int closestID = 0;
-        if(lat != 0 && lon != 0){
-            TextView tv = findViewById(R.id.testing);
-            closestID = findClosestStation(lat,lon);
-            tv.setText("lat = " + lat + " " + "lon = " + lon + " \n STACJA: " + closestID);
-        }
-
-        getAllStationsFromApi(lon, lat);
-
+        userLatitude = intent.getDoubleExtra("lat",0);
+        userLongitude = intent.getDoubleExtra("lon",0);
+        getDataFromAPI();
     }
 
-    private void getAllStationsFromApi(double lon, double lat) {
+    private void getDataFromAPI(){
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.gios.gov.pl/pjp-api/rest/")
-                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(GIOSservice.SERVICE_ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
-        StationAPI stationAPI = retrofit.create(StationAPI.class);
-        Call<List<Station>> call = stationAPI.getPost();
-        call.enqueue(new Callback<List<Station>>() {
+        GIOSservice gioSservice = retrofit.create(GIOSservice.class);
 
-            @Override
-            public void onResponse(Call<List<Station>> call, Response<List<Station>> response) {
-                for (int i = 0; i < response.body().size(); i++) {
-                    stationHashMap.put(response.body().get(i).getId(), response.body().get(i));
-                }
-
-                int closestStationID = stationHashMap.get(findClosestStation(lat,lon)).getId();
-                Log.i("testy","najbliza stacja = " + closestStationID);
-                TextView city = findViewById(R.id.text_city);
-                city.setText(stationHashMap.get(closestStationID).getStationName());
-
-
-                Retrofit retrofit1 = new Retrofit.Builder()
-                        .baseUrl("https://api.gios.gov.pl/pjp-api/rest/station/sensors/")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                SensorsAPI sensorsAPI = retrofit1.create(SensorsAPI.class);
-                Call<List<Sensors>> call1 = sensorsAPI.getPost(String.valueOf(closestStationID));
-
-                call1.enqueue(new Callback<List<Sensors>>() {
-                    @SuppressLint("CheckResult")
+        Disposable disposable = gioSservice.getPost()
+                .subscribeOn(Schedulers.io())
+                .flatMap((Function<List<Station>, ObservableSource<List<Sensors>>>) response1 -> {
+                    stationsList.addAll(response1);
+                    closestStationID = findClosestStation(userLatitude, userLongitude);
+                    return gioSservice.getSensors(String.valueOf(closestStationID));
+                })
+                .flatMap((Function<List<Sensors>, ObservableSource<AirQuality>>) response2 -> {
+                    sensorsList.addAll(response2);
+                    return gioSservice.getAirQuality(String.valueOf(closestStationID));
+                })
+                .map(response4 -> {
+                    qualityIndex = response4;
+                    return response4;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<AirQuality>() {
                     @Override
-                    public void onResponse(Call<List<Sensors>> call, Response<List<Sensors>> response) {
-                        for (int i = 0; i < response.body().size(); i++) {
-                            sensorsList.add(response.body().get(i));
-                        }
-
-                        Retrofit retrofit2 = new Retrofit.Builder()
-                                .baseUrl("https://api.gios.gov.pl/pjp-api/rest/data/getData/")
-                                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-
-                        DataAPI dataAPI = retrofit2.create(DataAPI.class);
-
-                        List<Observable<AirData>> requests = new ArrayList<>();
-
-                        for(int i=0;i<sensorsList.size();i++){
-                            requests.add(dataAPI.getPost(sensorsList.get(i).getId()+""));
-                        }
-
-                        Observable.zip(
-                                requests,
-                                (Function<Object[], List<AirData>>) objects -> {
-                                    List<AirData> airDataList = new ArrayList<>();
-                                    for(Object o : objects){
-                                        airDataList.add((AirData) o);
-                                    }
-                                    return airDataList;
-                        })
-                        .subscribe(
-                                (Consumer<List<AirData>>) airDataList -> {
-                                    runOnUiThread(new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                            getQualityIndexFromStation(closestStationID);
-                                            measurementsList.addAll(airDataList);
-                                            setValues();
-                                        }
-                                    });
-
-                                },
-
-                                (Consumer<Throwable>) e -> Log.e("testy", "Throwable: " + e)
-                        );
-
+                    public void onNext(@NonNull AirQuality o) {
+                        getMeasurements(retrofit);
                     }
 
                     @Override
-                    public void onFailure(Call<List<Sensors>> call, Throwable t) {
-                        Log.i("testy", t.getMessage());
-                        //TODO: try/catch block
+                    public void onError(@NonNull Throwable e) {
+                        Log.i("testy", "throwable = " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        setValues();
                     }
                 });
-            }
-            @Override
-            public void onFailure(Call<List<Station>> call, Throwable t) {
-                Log.i("testy",t.getMessage());
-            }
-        });
     }
 
 
+    @SuppressLint("CheckResult")
+    private void getMeasurements(Retrofit retrofit){
+        GIOSservice gioSservice = retrofit.create(GIOSservice.class);
+
+        List<Observable<AirData>> requests = new ArrayList<>();
+        for(int i = 0; i<sensorsList.size();i++){
+            requests.add(gioSservice.getData(sensorsList.get(i).getId()+""));
+        }
+
+        Observable.zip(
+                requests,
+                (Function<Object[], List<AirData>>) objects -> {
+                    List<AirData> airDataList = new ArrayList<>();
+                    for(Object obj : objects){
+                        airDataList.add((AirData) obj );
+                    }
+                    return airDataList;
+                })
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(
+                        (Consumer<List<AirData>>) airDataList -> {
+                            runOnUiThread(() -> {
+                                measurementsList.addAll(airDataList);
+                                setValues();
+                            });
+                        },
+                        (Consumer<Throwable>) e -> Log.e("testy", "Throwable: " + e)
+                );
+    }
+
     private void setValues(){
+        TextView tv = findViewById(R.id.testing);
+        tv.setText("lat = " + userLatitude + " " + "lon = " + userLongitude + " \n STACJA: " + closestStationID);
+        TextView city = findViewById(R.id.text_city);
+        for(Station o : stationsList){
+            if(o.getId() == closestStationID){
+                city.setText(o.getStationName());
+                break;
+            }
+        }
+
         TextView so2 = findViewById(R.id.text_so2);
         TextView no2 = findViewById(R.id.text_no2);
         TextView o3 = findViewById(R.id.text_o3);
@@ -166,7 +147,7 @@ public class AirQualityActivity extends AppCompatActivity {
 
         int not_null_index = -1;
 
-        for(AirData o : measurementsList){
+         for(AirData o : measurementsList){
             for(int i = 0; i < o.getValues().size(); i++){
                 if(o.getValues().get(i).getValue() != 0.0){
                     not_null_index = i;
@@ -191,35 +172,12 @@ public class AirQualityActivity extends AppCompatActivity {
                     Log.i("testy", "218 linijka switch case, coś poszło nie tak :c");
 
             }
+
+             TextView air_quality = findViewById(R.id.text_quality);
+             air_quality.setText(qualityIndex.getStIndexLevel().getIndexLevelName());
         }
 
     }
-
-    private void getQualityIndexFromStation(int stationID){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.gios.gov.pl/pjp-api/rest/aqindex/getIndex/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        AirQualityAPI airQualityAPI = retrofit.create(AirQualityAPI.class);
-        Call<AirQuality> call = airQualityAPI.getPost(String.valueOf(stationID));
-
-        call.enqueue(new Callback<AirQuality>() {
-            @Override
-            public void onResponse(Call<AirQuality> call, Response<AirQuality> response) {
-                qualityIndex = response.body();
-                TextView air_quality = findViewById(R.id.text_quality);
-                Log.i("testy", qualityIndex.getStIndexLevel().getIndexLevelName() + "");
-                air_quality.setText(qualityIndex.getStIndexLevel().getIndexLevelName());
-            }
-
-            @Override
-            public void onFailure(Call<AirQuality> call, Throwable t) {
-                //Log.i("testy",t.getMessage());
-            }
-        });
-    }
-
 
     private int findClosestStation(double lat, double lon){
         double station_lat = 0;
@@ -227,13 +185,13 @@ public class AirQualityActivity extends AppCompatActivity {
         int closestStation = -1;
         double closestDistance = -1;
         double distance;
-        for (int i: stationHashMap.keySet()) {
-            station_lat = stationHashMap.get(i).getGegrLat();
-            station_lon = stationHashMap.get(i).getGegrLon();
+        for (Station s : stationsList) {
+            station_lat = s.getGegrLat();
+            station_lon = s.getGegrLon();
             distance = Math.sqrt(Math.pow(Math.abs(station_lat-lat),2)+Math.pow(Math.abs(station_lon-lon),2));
             if(distance < closestDistance || closestDistance == -1){
                 closestDistance = distance;
-                closestStation = i;
+                closestStation = s.getId();
             }
         }
         return closestStation;
