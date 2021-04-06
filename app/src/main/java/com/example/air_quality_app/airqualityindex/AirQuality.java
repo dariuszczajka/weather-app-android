@@ -18,7 +18,7 @@ public class AirQuality {
     private stIndexLevel pm10IndexLevel;
     private String pm10SourceDataDate;
     private String pm25CalcDate;
-    private String pm25IndexLevel;
+    //private String pm25IndexLevel;
     private String pm25SourceDataDate;
     private String o3CalcDate;
     private stIndexLevel o3IndexLevel;
@@ -56,7 +56,6 @@ public class AirQuality {
                 ", pm10IndexLevel=" + pm10IndexLevel +
                 ", pm10SourceDataDate='" + pm10SourceDataDate + '\'' +
                 ", pm25CalcDate='" + pm25CalcDate + '\'' +
-                ", pm25IndexLevel='" + pm25IndexLevel + '\'' +
                 ", pm25SourceDataDate='" + pm25SourceDataDate + '\'' +
                 ", o3CalcDate='" + o3CalcDate + '\'' +
                 ", o3IndexLevel=" + o3IndexLevel +

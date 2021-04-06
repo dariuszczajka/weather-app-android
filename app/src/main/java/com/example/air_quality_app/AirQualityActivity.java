@@ -41,13 +41,20 @@ public class AirQualityActivity extends AppCompatActivity {
     private double userLongitude;
     private int closestStationID = 0;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_air_quality);
         Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        stationsList = (ArrayList<Station>) bundle.getSerializable("stations");
+        Log.i("testy", String.valueOf(stationsList.toString()));
         userLatitude = intent.getDoubleExtra("lat",0);
         userLongitude = intent.getDoubleExtra("lon",0);
+
+        closestStationID = findClosestStation(userLatitude,userLongitude);
+
         getDataFromAPI();
     }
 
@@ -64,13 +71,8 @@ public class AirQualityActivity extends AppCompatActivity {
 
         GIOSservice gioSservice = retrofit.create(GIOSservice.class);
 
-        Disposable disposable = gioSservice.getPost()
+        Disposable disposable = gioSservice.getSensors(String.valueOf(closestStationID))
                 .subscribeOn(Schedulers.io())
-                .flatMap((Function<List<Station>, ObservableSource<List<Sensors>>>) response1 -> {
-                    stationsList.addAll(response1);
-                    closestStationID = findClosestStation(userLatitude, userLongitude);
-                    return gioSservice.getSensors(String.valueOf(closestStationID));
-                })
                 .flatMap((Function<List<Sensors>, ObservableSource<AirQuality>>) response2 -> {
                     sensorsList.addAll(response2);
                     return gioSservice.getAirQuality(String.valueOf(closestStationID));
