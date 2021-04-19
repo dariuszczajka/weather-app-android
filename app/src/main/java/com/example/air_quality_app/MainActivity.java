@@ -1,21 +1,28 @@
 package com.example.air_quality_app;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.Manifest;
+import android.graphics.Color;
+
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.SearchView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.air_quality_app.sensors.Sensors;
 import com.example.air_quality_app.stations.Station;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.marcinmoskala.arcseekbar.ArcSeekBar;
+import com.xw.repo.BubbleSeekBar;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -40,13 +47,40 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Station> stationsArrayList = new ArrayList<Station>();
     private FusedLocationProviderClient fusedLocationClient;
     private double[] user_localization;
-    EditText editTextCity;
+    SearchView editTextCity;
+    TextView cityInput;
+    TextView polutantValue;
+    SeekBar seekBar;
+    ProgressBar polutantBar;
+    ArcSeekBar arcSeekBar;
+    View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         editTextCity = findViewById(R.id.editTextCity);
+        cityInput = findViewById(R.id.citySearch);
+        arcSeekBar = findViewById(R.id.seekArc);
+        editTextCity.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(query.length() != 0){
+                    Log.v("city:query:  ",query);
+                    cityInput.setText(query);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        //arc seek bar gradient
+        int[] intArray = getResources().getIntArray(R.array.progressGradientColors);
+        arcSeekBar.setProgressGradient(intArray);
         getStationsFromAPI();
     }
 
@@ -108,14 +142,22 @@ public class MainActivity extends AppCompatActivity {
             }
     }
 
-    public void intentActivityFromText(View view) {
-        String city = editTextCity.getText().toString();
+    public void updateCircleBar(){
+
+        polutantBar.setProgress(10);
+        polutantValue.setText(String.valueOf(polutantBar.getProgress()));
+    }
+
+    public void intentActivityFromText(String query) {
         Intent intent = new Intent(this, AirQualityActivity.class);
+        intent.putExtra("key", query);
         Bundle bundle = new Bundle();
         bundle.putSerializable("stations",stationsArrayList);
         intent.putExtras(bundle);
         startActivity(intent);
     }
+    int num = 0;
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -137,7 +179,5 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-
-
 
 }
