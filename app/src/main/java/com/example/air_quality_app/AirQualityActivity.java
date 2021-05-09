@@ -1,38 +1,32 @@
 package com.example.air_quality_app;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.air_quality_app.airdata.AirData;
 import com.example.air_quality_app.airqualityindex.AirQuality;
 import com.example.air_quality_app.sensors.Sensors;
 import com.example.air_quality_app.stations.Station;
-import com.example.air_quality_app.weather.Weather;
-import com.example.air_quality_app.weather.WeatherAPI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-
-import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -54,14 +48,14 @@ public class AirQualityActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         stationsList = (ArrayList<Station>) bundle.getSerializable("stations");
-        Log.i("testy", String.valueOf(stationsList.toString()));
+        //Log.i("testy", String.valueOf(stationsList.toString()));
         userLatitude = intent.getDoubleExtra("lat",0);
         userLongitude = intent.getDoubleExtra("lon",0);
 
         closestStationID = findClosestStation(userLatitude,userLongitude);
 
         getDataFromAPI();
-        getWeatherFromAPI();
+        //getWeatherFromAPI();
 
     }
 
@@ -155,7 +149,7 @@ public class AirQualityActivity extends AppCompatActivity {
         TextView pm10 = findViewById(R.id.text_pm10);
 
         int not_null_index = -1;
-
+        Log.v("mes", measurementsList.toString());
          for(AirData o : measurementsList){
             for(int i = 0; i < o.getValues().size(); i++){
                 if(o.getValues().get(i).getValue() != 0.0){
@@ -206,31 +200,5 @@ public class AirQualityActivity extends AppCompatActivity {
         return closestStation;
     }
 
-    private void getWeatherFromAPI(){
-
-        TextView temp = findViewById(R.id.temp);
-        TextView windSpeed = findViewById(R.id.windSpeed);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.openweathermap.org/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        WeatherAPI weatherAPI = retrofit.create(WeatherAPI.class);
-        Call<Weather> call = weatherAPI.getPost(userLatitude,userLongitude,"metric","749561a315b14523a8f5f1ef95e45864");
-
-        call.enqueue(new Callback<Weather>() {
-            @Override
-            public void onResponse(Call<Weather> call, Response<Weather> response) {
-                temp.setText(response.body().getMain().get("temp").toString()+" C");
-                windSpeed.setText(response.body().getWind().get("speed").toString()+" Km/h");
-                //Log.i("testy",response.body().getWind().get("speed").toString()+" Km/h");
-            }
-
-            @Override
-            public void onFailure(Call<Weather> call, Throwable t) {
-                Log.i("testy",t.getMessage());
-            }
-        });
-    }
 
 }

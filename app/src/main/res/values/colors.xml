@@ -13,9 +13,9 @@
     <color name="colorAccent">#00FFFFFF</color>
     <color name="sliderBack">#4227395a</color>
     <array name="progressGradientColors">
-        <item>#2ED600</item>
-        <item>#FFF42A</item>
-        <item>#FF9A00</item>
         <item>#C10000</item>
+        <item>#FF9A00</item>
+        <item>#FFF42A</item>
+        <item>#2ED600</item>
     </array>
 </resources>
